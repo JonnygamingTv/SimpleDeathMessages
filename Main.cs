@@ -1,32 +1,32 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using Rocket.API.DependencyInjection;
-using Rocket.API.Eventing;
-using Rocket.API.User;
-using Rocket.Core.I18N;
 using Rocket.Core.Logging;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Rocket.Core.Plugins;
-using Rocket.Unturned.Player.Events;
+using UnityEngine;
+using Rocket.API.Collections;
+using System;
+using Rocket.Unturned.Chat;
 
 namespace coolpuppy24.simpledeathmessages
 {
-    public class Main : Plugin<SimpleDeathMessagesConfiguration>, IEventListener<UnturnedPlayerDeathEvent>
+    public class SimpleDeathMessages : RocketPlugin<SimpleDeathMessagesConfiguration>
     {
-        private readonly IUserManager _userManager;
-
-        protected override void OnLoad(bool isFromReload)
+        public static SimpleDeathMessages Instance { get; private set; }
+        protected override void Load()
         {
-            Logger.LogInformation("Successfully Loaded!");
+            Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerDeath += HandleEvent;
+            Rocket.Core.Logging.Logger.Log("Successfully Loaded!");
         }
 
-        protected override void OnUnload()
+        protected override void Unload()
         {
-            Logger.LogInformation("Unloaded!");
+            Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerDeath -= HandleEvent;
+            Rocket.Core.Logging.Logger.Log("Unloaded!");
         }
 
-        public override Dictionary<string, string> DefaultTranslations => new Dictionary<string, string>
+        public override TranslationList DefaultTranslations => new TranslationList
         {
             {"gun_headshot","{1} [GUN - {3}] {2} {0}"},
             {"gun","{1} [GUN - {2}] {0}"},
@@ -63,77 +63,55 @@ namespace coolpuppy24.simpledeathmessages
             {"boulder","[BOULDER] {0}"},
         };
 
-        public Main(IDependencyContainer container, IEventManager eventManager, IUserManager userManager) : base("SimpleDeathMessages", container)
+        public void HandleEvent(UnturnedPlayer player, EDeathCause cause, ELimb limb, global::Steamworks.CSteamID murderer)
         {
-            _userManager = userManager;
-            eventManager.AddEventListener(this, this);
-        }
+            UnturnedPlayer killer = UnturnedPlayer.FromCSteamID(murderer);
 
-        public void HandleEvent(IEventEmitter emitter, UnturnedPlayerDeathEvent @event)
-        {
-            var player = (UnturnedPlayer)@event.Player;
-
-            UnturnedPlayer killer = ((UnturnedPlayerEntity)@event.Killer).Player;
-            var cause = @event.DeathCause;
-            var limb = @event.Limb;
-
-            var deathmessageColor = Color.Red; //ConfigurationInstance.DeathMessagesColor;
+            Color deathmessageColor = Configuration.Instance.DeathMessagesColor; //ConfigurationInstance.DeathMessagesColor;
 
 
-            string headshot = Translations.Get("headshot");
-            if (cause.ToString() == "SHRED" || cause.ToString() == "ZOMBIE" || cause.ToString() == "ANIMAL" ||
-                cause.ToString() == "SPARK" || cause.ToString() == "VEHICLE" || cause.ToString() == "FOOD" ||
-                cause.ToString() == "WATER" || cause.ToString() == "INFECTION" || cause.ToString() == "BLEEDING" ||
-                cause.ToString() == "LANDMINE" || cause.ToString() == "BREATH" || cause.ToString() == "KILL" ||
-                cause.ToString() == "FREEZING" || cause.ToString() == "SENTRY" || cause.ToString() == "CHARGE" ||
-                cause.ToString() == "MISSILE" || cause.ToString() == "BONES" || cause.ToString() == "SPLASH" ||
-                cause.ToString() == "ACID" || cause.ToString() == "SPIT" || cause.ToString() == "BURNING" ||
-                cause.ToString() == "BURNER" || cause.ToString() == "BOULDER" || cause.ToString() == "ARENA" ||
-                cause.ToString() == "GRENADE" ||
-                (ConfigurationInstance.ShowSuicideMSG && cause.ToString() == "SUICIDE") ||
-                cause.ToString() == "ROADKILL" || cause.ToString() == "MELEE" || cause.ToString() == "GUN" ||
-                cause.ToString() == "PUNCH")
+            string headshot = Translations.Instance.Translate("headshot");
+            if (Configuration.Instance.Causes.Contains(cause.ToString()) || (Instance.Configuration.Instance.ShowSuicideMSG && cause.ToString() == "SUICIDE"))
             {
                 if (cause.ToString() != "ROADKILL" && cause.ToString() != "MELEE" && cause.ToString() != "GUN" &&
                     cause.ToString() != "PUNCH")
                 {
-                    _userManager.BroadcastLocalized(Translations, cause.ToString().ToLower(), deathmessageColor, player.DisplayName);
+                    UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName));
                 }
                 else if (cause.ToString() == "ROADKILL")
                 {
-                    _userManager.BroadcastLocalized(Translations, "roadkill", deathmessageColor, player.DisplayName, killer.DisplayName);
+                    UnturnedChat.Say(Translations.Instance.Translate("roadkill", deathmessageColor, player.DisplayName, killer.DisplayName));
                 }
                 else if (cause.ToString() == "MELEE" || cause.ToString() == "GUN")
                 {
                     if (limb == ELimb.SKULL)
-                        _userManager.BroadcastLocalized(Translations, cause.ToString().ToLower() + "_headshot", deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.NativePlayer.equipment.asset.itemName);
+                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
                     else
-                        _userManager.BroadcastLocalized(Translations, cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.NativePlayer.equipment.asset.itemName);
+                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
                 }
                 else if (cause.ToString() == "PUNCH")
                 {
-                    _userManager.BroadcastLocalized(Translations,
-                        limb == ELimb.SKULL ? "punch_headshot" : "punch", deathmessageColor, player.DisplayName, killer.DisplayName, headshot);
+                    UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
                 }
 
                 return;
             }
-
-            if (Translations.Get(cause.ToString().ToLower()) != null)
+            String xy;
+            if ((xy=Translations.Instance.Translate(cause.ToString().ToLower())) != null && xy !="")
             {
-                if (Translations.Get(cause.ToString().ToLower()).Contains("{1}"))
+                if (xy.Contains("{1}"))
                 {
-                    _userManager.BroadcastLocalized(Translations, cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot);
+                    UnturnedChat.Say(Translations.Instance.Translate(xy, deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
                 }
                 else
                 {
-                    _userManager.BroadcastLocalized(Translations, cause.ToString().ToLower(), deathmessageColor, player.DisplayName, headshot);
+                    UnturnedChat.Say(Translations.Instance.Translate(xy, deathmessageColor, player.DisplayName, headshot));
                 }
 
                 return;
             }
 
-            Logger.LogError("Please add translation for " + cause +
+            Rocket.Core.Logging.Logger.LogError("Please add translation for " + cause +
                             " | Parameters for custom translation: {0} = Player , {1} = Killer");
         }
     }
