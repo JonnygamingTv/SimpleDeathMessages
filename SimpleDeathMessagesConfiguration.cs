@@ -1,4 +1,5 @@
 ﻿using Rocket.API;
+using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,13 @@ namespace coolpuppy24.simpledeathmessages
     {
         public bool ShowSuicideMSG;
         public UnityEngine.Color DeathMessagesColor;
-        public List<string> Causes;
+        public List<EDeathCause> Causes;
 
         public void LoadDefaults()
         {
             ShowSuicideMSG = true;
             DeathMessagesColor = UnityEngine.Color.red;
-            Causes = new List<string> { "SHRED", "ZOMBIE", "ANIMAL", "SPARK", "VEHICLE", "FOOD", "WATER", "INFECTION", "BLEEDING", "LANDMINE", "BREATH", "KILL", "FREEZING", "SENTRY", "CHARGE", "MISSILE", "BONES", "SPLASH", "ACID", "SPIT", "BURNING", "BURNER", "BOULDER", "ARENA", "GRENADE", "ROADKILL", "MELEE", "GUN", "PUNCH" };
+            Causes = new List<EDeathCause> { EDeathCause.SHRED, EDeathCause.ZOMBIE, EDeathCause.ANIMAL, EDeathCause.SPARK, EDeathCause.VEHICLE, EDeathCause.FOOD, EDeathCause.WATER, EDeathCause.INFECTION, EDeathCause.BLEEDING, EDeathCause.LANDMINE, EDeathCause.BREATH, EDeathCause.KILL, EDeathCause.FREEZING, EDeathCause.SENTRY, EDeathCause.CHARGE, EDeathCause.MISSILE, EDeathCause.BONES, EDeathCause.SPLASH, EDeathCause.ACID, EDeathCause.SPIT, EDeathCause.BURNING, EDeathCause.BURNER, EDeathCause.BOULDER, EDeathCause.ARENA, EDeathCause.GRENADE, EDeathCause.ROADKILL, EDeathCause.MELEE, EDeathCause.GUN, EDeathCause.PUNCH };
         }
     }
 }

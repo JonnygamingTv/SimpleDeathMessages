@@ -71,27 +71,26 @@ namespace coolpuppy24.simpledeathmessages
 
 
             string headshot = Translations.Instance.Translate("headshot");
-            if (Configuration.Instance.Causes.Contains(cause.ToString()) || (Instance.Configuration.Instance.ShowSuicideMSG && cause.ToString() == "SUICIDE"))
+            if (Configuration.Instance.Causes.Contains(cause) || (Instance.Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
             {
-                if (cause.ToString() != "ROADKILL" && cause.ToString() != "MELEE" && cause.ToString() != "GUN" &&
-                    cause.ToString() != "PUNCH")
+                switch (cause)
                 {
-                    UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName));
-                }
-                else if (cause.ToString() == "ROADKILL")
-                {
-                    UnturnedChat.Say(Translations.Instance.Translate("roadkill", deathmessageColor, player.DisplayName, killer.DisplayName));
-                }
-                else if (cause.ToString() == "MELEE" || cause.ToString() == "GUN")
-                {
-                    if (limb == ELimb.SKULL)
-                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
-                    else
-                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
-                }
-                else if (cause.ToString() == "PUNCH")
-                {
-                    UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
+                    case EDeathCause.ROADKILL:
+                        UnturnedChat.Say(Translations.Instance.Translate("roadkill", deathmessageColor, player.DisplayName, killer.DisplayName));
+                        break;
+                    case EDeathCause.MELEE:
+                    case EDeathCause.GUN:
+                        if (limb == ELimb.SKULL)
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
+                        else
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
+                        break;
+                    case EDeathCause.PUNCH:
+                        UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
+                        break;
+                    default:
+                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName));
+                        break;
                 }
 
                 return;
