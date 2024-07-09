@@ -100,11 +100,11 @@ namespace coolpuppy24.simpledeathmessages
             {
                 if (xy.Contains("{1}"))
                 {
-                    UnturnedChat.Say(Translations.Instance.Translate(xy, deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
+                    UnturnedChat.Say(Translations.Instance.Translate(xy, player.DisplayName, killer.DisplayName, headshot), deathmessageColor);
                 }
                 else
                 {
-                    UnturnedChat.Say(Translations.Instance.Translate(xy, deathmessageColor, player.DisplayName, headshot));
+                    UnturnedChat.Say(Translations.Instance.Translate(xy, player.DisplayName, headshot), deathmessageColor);
                 }
 
                 return;
