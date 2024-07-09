@@ -76,20 +76,20 @@ namespace coolpuppy24.simpledeathmessages
                 switch (cause)
                 {
                     case EDeathCause.ROADKILL:
-                        UnturnedChat.Say(Translations.Instance.Translate("roadkill", deathmessageColor, player.DisplayName, killer.DisplayName));
+                        UnturnedChat.Say(Translations.Instance.Translate("roadkill", player.DisplayName, killer.DisplayName), deathmessageColor);
                         break;
                     case EDeathCause.MELEE:
                     case EDeathCause.GUN:
                         if (limb == ELimb.SKULL)
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName), deathmessageColor);
                         else
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName));
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName), deathmessageColor);
                         break;
                     case EDeathCause.PUNCH:
-                        UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", deathmessageColor, player.DisplayName, killer.DisplayName, headshot));
+                        UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", player.DisplayName, killer.DisplayName, headshot), deathmessageColor);
                         break;
                     default:
-                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), deathmessageColor, player.DisplayName));
+                        UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName), deathmessageColor);
                         break;
                 }
 
