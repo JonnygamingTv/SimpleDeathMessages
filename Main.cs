@@ -13,10 +13,12 @@ namespace coolpuppy24.simpledeathmessages
 {
     public class SimpleDeathMessages : RocketPlugin<SimpleDeathMessagesConfiguration>
     {
+        string headshot;
         public static SimpleDeathMessages Instance { get; private set; }
         protected override void Load()
         {
             Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerDeath += HandleEvent;
+            headshot = Translations.Instance.Translate("headshot");
             Rocket.Core.Logging.Logger.Log("Successfully Loaded!");
         }
 
@@ -63,14 +65,14 @@ namespace coolpuppy24.simpledeathmessages
             {"boulder","[BOULDER] {0}"},
         };
 
-        public void HandleEvent(UnturnedPlayer player, EDeathCause cause, ELimb limb, global::Steamworks.CSteamID murderer)
+        public void HandleEvent(UnturnedPlayer player, EDeathCause cause, ELimb limb, Steamworks.CSteamID murderer)
         {
-            UnturnedPlayer killer = UnturnedPlayer.FromCSteamID(murderer);
+            UnturnedPlayer killer = murderer != Steamworks.CSteamID.Nil ? UnturnedPlayer.FromCSteamID(murderer) : player;
 
             Color deathmessageColor = Configuration.Instance.DeathMessagesColor; //ConfigurationInstance.DeathMessagesColor;
 
 
-            string headshot = Translations.Instance.Translate("headshot");
+            //string headshot = Translations.Instance.Translate("headshot");
             if (Configuration.Instance.Causes.Contains(cause) || (Instance.Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
             {
                 switch (cause)
