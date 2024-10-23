@@ -15,10 +15,12 @@ namespace coolpuppy24.simpledeathmessages
     {
         string headshot;
         public static SimpleDeathMessages Instance { get; private set; }
+        public HashSet<EDeathCause> CausesSet { get; private set; } = new HashSet<EDeathCause>();
         protected override void Load()
         {
             Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerDeath += HandleEvent;
             headshot = Translations.Instance.Translate("headshot");
+            CausesSet = new HashSet<EDeathCause>(Configuration.Instance.Causes);
             Rocket.Core.Logging.Logger.Log("Successfully Loaded!");
         }
 
@@ -71,7 +73,7 @@ namespace coolpuppy24.simpledeathmessages
             Color deathmessageColor = Configuration.Instance.DeathMessagesColor; //ConfigurationInstance.DeathMessagesColor;
 
             //string headshot = Translations.Instance.Translate("headshot");
-            if (Configuration.Instance.Causes.Contains(cause) || (Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
+            if (CausesSet.Contains(cause) || (Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
             {
                 switch (cause)
                 {
