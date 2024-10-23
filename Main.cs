@@ -67,13 +67,11 @@ namespace coolpuppy24.simpledeathmessages
 
         public void HandleEvent(UnturnedPlayer player, EDeathCause cause, ELimb limb, Steamworks.CSteamID murderer)
         {
-            UnturnedPlayer killer = murderer != Steamworks.CSteamID.Nil ? UnturnedPlayer.FromCSteamID(murderer) : player;
-
+            UnturnedPlayer killer = UnturnedPlayer.FromCSteamID(murderer);
             Color deathmessageColor = Configuration.Instance.DeathMessagesColor; //ConfigurationInstance.DeathMessagesColor;
 
-
             //string headshot = Translations.Instance.Translate("headshot");
-            if (Configuration.Instance.Causes.Contains(cause) || (Instance.Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
+            if (Configuration.Instance.Causes.Contains(cause) || (Configuration.Instance.ShowSuicideMSG && cause == EDeathCause.SUICIDE))
             {
                 switch (cause)
                 {
@@ -83,9 +81,9 @@ namespace coolpuppy24.simpledeathmessages
                     case EDeathCause.MELEE:
                     case EDeathCause.GUN:
                         if (limb == ELimb.SKULL)
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName), deathmessageColor);
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment?.asset.itemName), deathmessageColor);
                         else
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset.itemName), deathmessageColor);
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment?.asset.itemName), deathmessageColor);
                         break;
                     case EDeathCause.PUNCH:
                         UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", player.DisplayName, killer.DisplayName, headshot), deathmessageColor);
@@ -97,8 +95,8 @@ namespace coolpuppy24.simpledeathmessages
 
                 return;
             }
-            String xy;
-            if ((xy=Translations.Instance.Translate(cause.ToString().ToLower())) != null && xy !="")
+            string xy = Translations.Instance.Translate(cause.ToString().ToLower());
+            if (!string.IsNullOrEmpty(xy))
             {
                 if (xy.Contains("{1}"))
                 {
