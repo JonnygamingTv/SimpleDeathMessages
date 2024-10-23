@@ -81,9 +81,9 @@ namespace coolpuppy24.simpledeathmessages
                     case EDeathCause.MELEE:
                     case EDeathCause.GUN:
                         if (limb == ELimb.SKULL)
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment?.asset.itemName), deathmessageColor);
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower() + "_headshot", player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset?.itemName), deathmessageColor);
                         else
-                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment?.asset.itemName), deathmessageColor);
+                            UnturnedChat.Say(Translations.Instance.Translate(cause.ToString().ToLower(), player.DisplayName, killer.DisplayName, headshot, killer.Player.equipment.asset?.itemName), deathmessageColor);
                         break;
                     case EDeathCause.PUNCH:
                         UnturnedChat.Say(Translations.Instance.Translate(limb == ELimb.SKULL ? "punch_headshot" : "punch", player.DisplayName, killer.DisplayName, headshot), deathmessageColor);
